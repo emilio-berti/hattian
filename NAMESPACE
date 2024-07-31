@@ -2,6 +2,7 @@
 
 export(li_stan)
 export(lm_stan)
+export(yeakel_stan)
 import(Rcpp)
 import(methods)
 importFrom(RcppParallel,RcppParallelLibs)
