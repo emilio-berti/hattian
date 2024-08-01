@@ -27,4 +27,3 @@ li_stan <- function(fw, m_prey, m_pred, ...) {
   out <- rstan::sampling(stanmodels$li, data = standata, ...)
   return (out)
 }
-# install.packages("../hattian/", type="source", repos=NULL)
