@@ -1,8 +1,9 @@
 #' Get GBIF Taxonomy
 #'
+#' @importFrom rgbif name_backbone_checklist
+#'
 #' @export
 #' @param sp Character vector of species names.
-#' @param ... Arguments passed to `rbif::name_backbone_checklist` (e.g. strict).
 #' @return A data.frame object returned by `rbif::name_backbone_checklist`.
 #' 
 #' @details This function takes some time and it's needed only once. I ran
@@ -42,7 +43,7 @@ harmonize <- function(
 				" species not found in dataset ", i, "."
 			)
 		}
-		datasets[[i]] <- subset(datasets[[i]], !is.na(species))
+		datasets[[i]] <- subset(datasets[[i]], !is.na("species"))
 	}
 	return (datasets)
 }

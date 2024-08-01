@@ -8,8 +8,6 @@ gbif_taxonomy(sp)
 }
 \arguments{
 \item{sp}{Character vector of species names.}
-
-\item{...}{Arguments passed to \code{rbif::name_backbone_checklist} (e.g. strict).}
 }
 \value{
 A data.frame object returned by \code{rbif::name_backbone_checklist}.

@@ -1,3 +1,4 @@
 ^\.github$
 ^rcppExports.cpp$
 ^stanExports_*
+^LICENSE\.md$
