@@ -1,5 +1,7 @@
 #' Yeakel et al. (?) model.
 #'
+#' @importFrom rstan extract
+#'
 #' @export
 #' @param fw Numeric matrix of the adjacency matrix of the food web.
 #'  Predators are in columns and prey in rows.
@@ -22,4 +24,24 @@ yeakel_stan <- function(fw, m_prey, m_pred, ...) {
   )
   out <- rstan::sampling(stanmodels$yeakel, data = standata, ...)
   return (out)
+}
+
+yeakel_predict <- function(
+  fit,
+  m_prey,
+  m_pred,
+  samples = 300
+) {
+  logit <- function(x) 1 / (1 + exp(-x))
+  posterior <- extract(fit, c("a1", "a2", "a3"))
+  posterior <- do.call(cbind, posterior)
+  posterior <- posterior[sample(seq_len(nrow(posterior)), samples), ]
+  posterior <- as.data.frame(posterior)
+  p <- array(NA, dim = c(nrow(m_prey), nrow(m_pred), samples))
+  for (i in seq_len(samples)) {
+    p[, , i] <- with(posterior[i, ], a1 + a2 * m_prey / m_pred + a3 * (m_prey / m_pred) ^ 2)
+  }
+  p <- logit(p)
+  p_mean <- apply(p, MARGIN = c(1, 2), mean)
+  return (p_mean)
 }
