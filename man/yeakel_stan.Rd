@@ -10,9 +10,9 @@ yeakel_stan(fw, m_prey, m_pred, ...)
 \item{fw}{Numeric matrix of the adjacency matrix of the food web.
 Predators are in columns and prey in rows.}
 
-\item{m_prey}{Numeric matrix of the prey body mass.}
+\item{m_prey}{Numeric vector of the prey body mass.}
 
-\item{m_pred}{Numeric matrix of the predator body mass.}
+\item{m_pred}{Numeric vector of the predator body mass.}
 
 \item{...}{Arguments passed to \code{rstan::sampling} (e.g. iter, chains).}
 }
@@ -23,9 +23,11 @@ An object of class \code{stanfit} returned by \code{rstan::sampling}
 Yeakel et al. (?) model.
 }
 \examples{
+\dontrun{
 library(hattian)
 fw <- matrix(sample(c(0, 1), 100, replace = TRUE), nrow = 10, ncol = 10)
-m_prey <- matrix(runif(10, 0, 1), nrow = 10, ncol = 10)
-m_pred <- matrix(runif(10, 0, 1), nrow = 10, ncol = 10, byrow = TRUE)
+m_prey <- runif(10, 0, 1)
+m_pred <- runif(10, 0, 1)
 fit <- yeakel_stan(fw, m_prey, m_pred, warmup = 100, iter = 200)
+}
 }

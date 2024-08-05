@@ -1,14 +1,8 @@
 data {
   int N; // observations
-  int S; // species
-  int B; // basal species
   array[N] int<lower=0,upper=1> link;
   vector[N] mi;
   vector[N] mr;
-
-  // I had some issues with to_int(ceil(i / S)) and found another, 
-  // less elegant solution.
-  array[N] int s; //species ID
 }
 
 parameters {
@@ -30,17 +24,16 @@ model{
   gamma1 ~ normal(0, 10);
 
   // auxilliary variables
-  vector[S - B] mu;
-  vector[S - B] sigma;
-  vector[S - B] theta;
+  real mu;
+  real sigma;
+  real theta;
   vector[N] p;
 
   for (i in 1:N) {
-    //s = to_int(ceil(i / S));
-    mu[s[i]] = alpha0 + alpha1 * mi[i];
-    sigma[s[i]] = exp(beta0 + beta1 * mi[i]);
-    theta[s[i]] = exp( (gamma0 + gamma1 * mi[i])/(1 + exp(gamma0 + gamma1 * mi[i])) );
-    p[i] = theta[s[i]] * exp( - (mr[i] - mu[s[i]])^2 / (2 * sigma[s[i]]^2) );
+    mu = alpha0 + alpha1 * mi[i];
+    sigma = exp(beta0 + beta1 * mi[i]);
+    theta = exp( (gamma0 + gamma1 * mi[i])/(1 + exp(gamma0 + gamma1 * mi[i])) );
+    p[i] = theta * exp( - (mr[i] - mu)^2 / (2 * sigma^2) );
   }
   
   // likelihood
@@ -48,21 +41,20 @@ model{
 }
 
 generated quantities{ // calculate correlation matrix R from Cholesky 
-  vector[S - B] mu; 
-  vector[S - B] sigma;
-  vector[S - B] theta;
   vector[N] log_lik; {
     
     // auxilliary variables
+    real mu;
+    real sigma;
+    real theta;
     vector[N] p;
 
     // likelihood
     for (i in 1:N) {
-      //s = to_int(ceil(i / S));
-      mu[s[i]] = alpha0 + alpha1 * mi[i];
-      sigma[s[i]] = exp(beta0 + beta1 * mi[i]);
-      theta[s[i]] = exp( (gamma0 + gamma1 * mi[i])/(1 + exp(gamma0 + gamma1 * mi[i])) );
-      p[i] = theta[s[i]] * exp( - (mr[i] - mu[s[i]])^2 / (2 * sigma[s[i]]^2) );
+      mu = alpha0 + alpha1 * mi[i];
+      sigma = exp(beta0 + beta1 * mi[i]);
+      theta = exp( (gamma0 + gamma1 * mi[i])/(1 + exp(gamma0 + gamma1 * mi[i])) );
+      p[i] = theta * exp( - (mr[i] - mu)^2 / (2 * sigma^2) );
       log_lik[i] = bernoulli_lpmf(link[i] | p[i]);
     }
   }
