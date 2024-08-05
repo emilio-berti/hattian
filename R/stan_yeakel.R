@@ -30,7 +30,7 @@ yeakel_stan <- function(fw, m_prey, m_pred, ...) {
   standata <- list(
     N = length(fw),
     link = as.vector(fw),
-    mr = log10(as.vector(m_prey / m_pred))
+    mr = log10(as.vector(m_pred / m_prey))
   )
   out <- sampling(stanmodels$yeakel, data = standata, ...)
   return (out)
@@ -74,7 +74,7 @@ yeakel_predict <- function(
   posterior <- as.data.frame(posterior)
   p <- array(NA, dim = c(nrow(m_prey), ncol(m_pred), samples))
   for (i in seq_len(samples)) {
-    p[, , i] <- with(posterior[i, ], a1 + a2 * m_prey / m_pred + a3 * (m_prey / m_pred) ^ 2)
+    p[, , i] <- with(posterior[i, ], a1 + a2 * log10(m_pred / m_prey) + a3 * log10(m_pred / m_prey) ^ 2)
   }
   p <- logit(p)
   p_mean <- apply(p, MARGIN = c(1, 2), mean)
