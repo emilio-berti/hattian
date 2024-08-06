@@ -5,7 +5,7 @@
 \alias{mammals}
 \title{Body Mass for Mammals.}
 \format{
-\subsection{\code{who}}{
+\subsection{\code{mammals}}{
 
 A data frame with 4,041 rows and 2 columns:
 \describe{

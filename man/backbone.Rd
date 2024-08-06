@@ -5,7 +5,7 @@
 \alias{backbone}
 \title{GBIF Taxonomic Backbone}
 \format{
-\subsection{\code{who}}{
+\subsection{\code{backbone}}{
 
 A data frame with 13,158 rows and 2 columns:
 \describe{

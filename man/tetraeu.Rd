@@ -5,7 +5,7 @@
 \alias{tetraeu}
 \title{European Tetrapod Meta-Web}
 \format{
-\subsection{\code{who}}{
+\subsection{\code{tetraeu}}{
 
 A data frame with 60,453 rows and 2 columns:
 \describe{

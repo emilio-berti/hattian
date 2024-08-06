@@ -14,6 +14,8 @@ Predators are in columns and prey in rows.}
 
 \item{m_pred}{Numeric vector of the predator body mass.}
 
+\item{samples}{Numeric value of the number of samples to draw.}
+
 \item{...}{Arguments passed to \code{rstan::sampling} (e.g. iter, chains).}
 }
 \value{
