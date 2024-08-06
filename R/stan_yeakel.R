@@ -44,6 +44,7 @@ yeakel_stan <- function(fw, m_prey, m_pred, ...) {
 #'  Predators are in columns and prey in rows.
 #' @param m_prey Numeric vector of the prey body mass.
 #' @param m_pred Numeric vector of the predator body mass.
+#' @param samples Numeric value of the number of samples to draw.
 #' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
 #' @return An object of class `stanfit` returned by `rstan::sampling`
 #'

@@ -1,6 +1,7 @@
 #' Compare Inference Models
 #'
 #' @importFrom loo loo loo_compare
+#' @importFrom graphics abline
 #'
 #' @export
 #' @param models List of models to compare. Better if it's a named list.
