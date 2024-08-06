@@ -39,13 +39,13 @@ yeakel_stan <- function(fw, m_prey, m_pred, ...) {
 #' Predict Using Yeakel Model
 #'
 #' @importFrom rstan extract
+#' @importFrom stats sd
 #' @export
 #' @param fit Numeric matrix of the adjacency matrix of the food web.
 #'  Predators are in columns and prey in rows.
 #' @param m_prey Numeric vector of the prey body mass.
 #' @param m_pred Numeric vector of the predator body mass.
 #' @param samples Numeric value of the number of samples to draw.
-#' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
 #' @return An object of class `stanfit` returned by `rstan::sampling`
 #'
 #' @examples
@@ -67,8 +67,8 @@ yeakel_predict <- function(
   stopifnot(is(m_pred, "numeric"))
   stopifnot(is(samples), "numeric")
   logit <- function(x) 1 / (1 + exp(-x))
-  m_prey <- matrix(m_prey, nrow = nrow(fw), ncol = ncol(fw))
-  m_pred <- matrix(m_prey, nrow = nrow(fw), ncol = ncol(fw), byrow = TRUE)
+  m_prey <- matrix(m_prey, nrow = length(m_prey), ncol = length(m_pred))
+  m_pred <- matrix(m_prey, nrow = length(m_prey), ncol = length(m_pred), byrow = TRUE)
   posterior <- rstan::extract(fit, c("a1", "a2", "a3"))
   posterior <- do.call(cbind, posterior)
   posterior <- posterior[sample(seq_len(nrow(posterior)), samples), ]
