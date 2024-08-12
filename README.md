@@ -77,7 +77,6 @@ and
 This model is coded in stan and is called using `yeakel_stan()`:
 
 ``` r
-library(hattian)
 # create community
 S <- 20
 m <- sort(runif(S, 1, 1e2))
@@ -127,7 +126,121 @@ par(oldpar)
 
 ## Variable niche width model (Li et al., 2023)
 
-In this model,
+This model is a conceptual variation of the Yeakel (2014) model. In
+Yeakel’s model, the relative optimal prey size is constant for all
+predators, with niche width determined by the parameter `a3`. In Li’s
+model, instead, the optimal prey size
+(![\\mu\_j](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Cmu_j
+"\\mu_j")) and niche width
+![\\sigma\_j](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Csigma_j
+"\\sigma_j") of a predator
+![j](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;j
+"j") scale allometrically with predators’ size. Specifically, for a
+predator
+![j](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;j
+"j"), its optimal size prey is:   
+![
+\\mu\_j = \\alpha\_0 + \\alpha\_1 log\_{10}(m\_j)
+](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%0A%5Cmu_j%20%3D%20%5Calpha_0%20%2B%20%5Calpha_1%20log_%7B10%7D%28m_j%29%0A
+"
+\\mu_j = \\alpha_0 + \\alpha_1 log_{10}(m_j)
+")  
+its niche width is:   
+![
+\\sigma\_j = exp(\\beta\_0 + \\beta\_1 log\_{10}(m\_j))
+](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%0A%5Csigma_j%20%3D%20exp%28%5Cbeta_0%20%2B%20%5Cbeta_1%20log_%7B10%7D%28m_j%29%29%0A
+"
+\\sigma_j = exp(\\beta_0 + \\beta_1 log_{10}(m_j))
+")  
+and the maximum probability of interaction is:   
+![
+\\theta\_j = logit^{-1}(\\gamma\_0 + \\gamma\_1 log\_{10}(m\_j))
+](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%0A%5Ctheta_j%20%3D%20logit%5E%7B-1%7D%28%5Cgamma_0%20%2B%20%5Cgamma_1%20log_%7B10%7D%28m_j%29%29%0A
+"
+\\theta_j = logit^{-1}(\\gamma_0 + \\gamma_1 log_{10}(m_j))
+")  
+The probability of interaction is then calculated as:   
+![
+P(A\_{ij} = 1) = \\theta\_j exp( - \\frac{(log\_{10}(m\_j/m\_i) -
+\\mu\_j)^2}{2\\sigma\_j^2} )
+](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%0AP%28A_%7Bij%7D%20%3D%201%29%20%3D%20%5Ctheta_j%20exp%28%20-%20%5Cfrac%7B%28log_%7B10%7D%28m_j%2Fm_i%29%20-%20%5Cmu_j%29%5E2%7D%7B2%5Csigma_j%5E2%7D%20%29%0A
+"
+P(A_{ij} = 1) = \\theta_j exp( - \\frac{(log_{10}(m_j/m_i) - \\mu_j)^2}{2\\sigma_j^2} )
+")  
+
+``` r
+# create community
+S <- 20
+m <- sort(runif(S, 1, 1e2))
+fw <- matrix(NA, nrow = S, ncol = S)
+
+# set parameters
+alpha0 <- -3
+alpha1 <- 2
+beta0 <- -3
+beta1 <- 0.5
+gamma0 <- 0.1
+gamma1 <- -0.1
+
+# create web accordingly
+for (j in seq_along(m)) {
+  mu <- alpha0 + alpha1 * log10(m[j])
+  sigma <- exp(beta0 + beta1 * log10(m[j]))
+  theta <- exp( (gamma0 + gamma1 * log10(m[j])) / (1 + gamma0 + gamma1 * log10(m[j])) )
+  fw[, j] <- theta * exp( - ( (log10(m[j] / m) - mu)^2 / 2 / sigma^2 ) )
+}
+
+# sample probabilities
+fw <- rbinom(length(fw), 1, fw)
+fw <- matrix(fw, nrow = S, ncol = S)
+show_web(fw)
+```
+
+<img src="man/figures/README-li-1.png" width="100%" />
+
+``` r
+
+# fit model
+fit_li <- li_stan(
+  fw, m,
+  warmup = 250, iter = 500, #to speed up vignette
+  cores = 4, refresh = 250
+)
+#> Warning: There were 140 divergent transitions after warmup. See
+#> https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+#> to find out why this is a problem and how to eliminate them.
+#> Warning: Examine the pairs() plot to diagnose sampling problems
+#> Warning: The largest R-hat is 1.05, indicating chains have not mixed.
+#> Running the chains for more iterations may help. See
+#> https://mc-stan.org/misc/warnings.html#r-hat
+#> Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+#> Running the chains for more iterations may help. See
+#> https://mc-stan.org/misc/warnings.html#bulk-ess
+#> Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+#> Running the chains for more iterations may help. See
+#> https://mc-stan.org/misc/warnings.html#tail-ess
+pars <- c(
+  "alpha0", "alpha1",
+  "beta0", "beta1",
+  "gamma0", "gamma1"
+)
+posterior <- rstan::extract(fit_li, pars)
+oldpar <- par(no.readonly = TRUE)
+par(mfrow = c(3, 2), mar = c(4, 4, 2, 2))
+for (i in seq_along(posterior)) {
+  plot(
+    density(posterior[[i]]),
+    main = names(posterior)[i],
+    xlab = "Posterior"
+  )
+}
+```
+
+<img src="man/figures/README-li-2.png" width="100%" />
+
+``` r
+par(oldpar)
+```
 
 # References
 

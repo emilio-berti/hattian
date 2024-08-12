@@ -2,7 +2,7 @@
 #'
 #' @description A DESCRIPTION OF THE PACKAGE
 #'
-#' @docType package
+#' @docType _PACKAGE
 #' @name hattian-package
 #' @aliases hattian
 #' @useDynLib hattian, .registration = TRUE

@@ -4,15 +4,13 @@
 \alias{li_stan}
 \title{Li et al. (2024) model.}
 \usage{
-li_stan(fw, m_prey, m_pred, ...)
+li_stan(fw, masses, ...)
 }
 \arguments{
 \item{fw}{Numeric matrix of the adjacency matrix of the food web.
 Predators are in columns and prey in rows.}
 
-\item{m_prey}{Numeric vector of the prey body mass.}
-
-\item{m_pred}{Numeric vector of the predator body mass.}
+\item{masses}{Numeric vector of the species' body mass.}
 
 \item{...}{Arguments passed to \code{rstan::sampling} (e.g. iter, chains).}
 }

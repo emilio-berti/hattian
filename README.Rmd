@@ -69,7 +69,6 @@ and $m_i$ and $m_j$ are the body masses if prey and predator, respectively.
 This model is coded in stan and is called using `yeakel_stan()`:
 
 ```{r yeakel}
-library(hattian)
 # create community
 S <- 20
 m <- sort(runif(S, 1, 1e2))
@@ -111,7 +110,77 @@ par(oldpar)
 ```
 
 ## Variable niche width model (Li et al., 2023)
-In this model, 
+
+This model is a conceptual variation of the Yeakel (2014) model.
+In Yeakel's model, the relative optimal prey size is constant for all predators, with niche width determined by the parameter `a3`.
+In Li's model, instead, the optimal prey size ($\mu_j$) and niche width $\sigma_j$ of a predator $j$ scale allometrically with predators' size.
+Specifically, for a predator $j$, its optimal size prey is:
+$$
+\mu_j = \alpha_0 + \alpha_1 log_{10}(m_j)
+$$
+its niche width is:
+$$
+\sigma_j = exp(\beta_0 + \beta_1 log_{10}(m_j))
+$$
+and the maximum probability of interaction is:
+$$
+\theta_j = logit^{-1}(\gamma_0 + \gamma_1 log_{10}(m_j))
+$$
+The probability of interaction is then calculated as:
+$$
+P(A_{ij} = 1) = \theta_j exp( - \frac{(log_{10}(m_j/m_i) - \mu_j)^2}{2\sigma_j^2} )
+$$
+
+```{r li}
+# create community
+S <- 20
+m <- sort(runif(S, 1, 1e2))
+fw <- matrix(NA, nrow = S, ncol = S)
+
+# set parameters
+alpha0 <- -3
+alpha1 <- 2
+beta0 <- -3
+beta1 <- 0.5
+gamma0 <- 0.1
+gamma1 <- -0.1
+
+# create web accordingly
+for (j in seq_along(m)) {
+  mu <- alpha0 + alpha1 * log10(m[j])
+  sigma <- exp(beta0 + beta1 * log10(m[j]))
+  theta <- exp( (gamma0 + gamma1 * log10(m[j])) / (1 + gamma0 + gamma1 * log10(m[j])) )
+  fw[, j] <- theta * exp( - ( (log10(m[j] / m) - mu)^2 / 2 / sigma^2 ) )
+}
+
+# sample probabilities
+fw <- rbinom(length(fw), 1, fw)
+fw <- matrix(fw, nrow = S, ncol = S)
+show_web(fw)
+
+# fit model
+fit_li <- li_stan(
+  fw, m,
+  warmup = 250, iter = 500, #to speed up vignette
+  cores = 4, refresh = 250
+)
+pars <- c(
+  "alpha0", "alpha1",
+  "beta0", "beta1",
+  "gamma0", "gamma1"
+)
+posterior <- rstan::extract(fit_li, pars)
+oldpar <- par(no.readonly = TRUE)
+par(mfrow = c(3, 2), mar = c(4, 4, 2, 2))
+for (i in seq_along(posterior)) {
+  plot(
+    density(posterior[[i]]),
+    main = names(posterior)[i],
+    xlab = "Posterior"
+  )
+}
+par(oldpar)
+```
 
 # References
 

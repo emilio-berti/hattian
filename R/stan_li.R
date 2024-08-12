@@ -5,8 +5,7 @@
 #' @export
 #' @param fw Numeric matrix of the adjacency matrix of the food web.
 #'  Predators are in columns and prey in rows.
-#' @param m_prey Numeric vector of the prey body mass.
-#' @param m_pred Numeric vector of the predator body mass.
+#' @param masses Numeric vector of the species' body mass.
 #' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
 #' @return An object of class `stanfit` returned by `rstan::sampling`
 #'
@@ -26,12 +25,11 @@
 #' image(fw)
 #' fit <- li_stan(fw, m_prey, m_pred, warmup = 100, iter = 200, refresh = 10, cores = 4)
 #' }
-li_stan <- function(fw, m_prey, m_pred, ...) {
+li_stan <- function(fw, masses, ...) {
   stopifnot(is(fw, "matrix"))
-  stopifnot(is(m_prey, "numeric"))
-  stopifnot(is(m_pred, "numeric"))
-  m_prey <- matrix(m_prey, nrow = nrow(fw), ncol = ncol(fw))
-  m_pred <- matrix(m_prey, nrow = nrow(fw), ncol = ncol(fw), byrow = TRUE)
+  stopifnot(is(masses, "numeric"))
+  m_prey <- matrix(log10(masses), nrow = nrow(fw), ncol = ncol(fw))
+  m_pred <- matrix(log10(masses), nrow = nrow(fw), ncol = ncol(fw), byrow = TRUE)
   basals <- which(colSums(fw) == 0)
   if (length(basals) > 0) {
     m_prey <- m_prey[, -basals]
@@ -42,7 +40,7 @@ li_stan <- function(fw, m_prey, m_pred, ...) {
     N = length(fw),
     link = as.vector(fw),
     mi = as.vector(m_pred),
-    mr = as.vector(m_pred / m_prey)
+    mr = as.vector(m_pred - m_prey) #ratio in non-log scale
   )
   out <- sampling(stanmodels$li, data = standata, ...)
   return (out)
