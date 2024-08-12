@@ -4,15 +4,13 @@
 \alias{yeakel_stan}
 \title{Yeakel et al. (?) model.}
 \usage{
-yeakel_stan(fw, m_prey, m_pred, ...)
+yeakel_stan(fw, masses, ...)
 }
 \arguments{
 \item{fw}{Numeric matrix of the adjacency matrix of the food web.
 Predators are in columns and prey in rows.}
 
-\item{m_prey}{Numeric vector of the prey body mass.}
-
-\item{m_pred}{Numeric vector of the predator body mass.}
+\item{masses}{Numeric vector of the species' body mass.}
 
 \item{...}{Arguments passed to \code{rstan::sampling} (e.g. iter, chains).}
 }
@@ -26,8 +24,7 @@ Yeakel et al. (?) model.
 \dontrun{
 library(hattian)
 fw <- matrix(sample(c(0, 1), 100, replace = TRUE), nrow = 10, ncol = 10)
-m_prey <- runif(10, 0, 1)
-m_pred <- runif(10, 0, 1)
-fit <- yeakel_stan(fw, m_prey, m_pred, warmup = 100, iter = 200)
+masses <- runif(10, 0, 1)
+fit <- yeakel_stan(fw, masses, warmup = 100, iter = 200)
 }
 }
