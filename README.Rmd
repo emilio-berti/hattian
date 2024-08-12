@@ -30,6 +30,16 @@ devtools::install_github("emilio-berti/hattian")
 
 hattian depends on big packages, such as stan and Rcpp, and it takes some time to install. Be patient...
 
+You can install all dependencies before install hattian by running:
+```{r install, eval=FALSE}
+install.packages(
+  c(
+    "loo", "Rcpp", "RcppParallel", "rstan", "rstantools", "BH", 
+    "RcppEigen", "StanHeaders", "rgbif", "RandomForest"
+  )
+)
+```
+
 Load the package:
 ```{r load}
 library(hattian)
@@ -141,7 +151,7 @@ fw <- matrix(NA, nrow = S, ncol = S)
 alpha0 <- -3
 alpha1 <- 2
 beta0 <- -3
-beta1 <- 0.5
+beta1 <- 0.75
 gamma0 <- 0.1
 gamma1 <- -0.1
 

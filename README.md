@@ -22,6 +22,17 @@ devtools::install_github("emilio-berti/hattian")
 hattian depends on big packages, such as stan and Rcpp, and it takes
 some time to install. Be patient…
 
+You can install all dependencies before install hattian by running:
+
+``` r
+install.packages(
+  c(
+    "loo", "Rcpp", "RcppParallel", "rstan", "rstantools", "BH", 
+    "RcppEigen", "StanHeaders", "rgbif", "RandomForest"
+  )
+)
+```
+
 Load the package:
 
 ``` r
@@ -49,30 +60,12 @@ Hattian contains \# models to infer foodwebs:
 ## Scaling niche model (Yeakel et al., 2014)
 
 This is the simplest model implemented in hattian. The probability that
-predator
-![j](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;j
-"j") predates on prey
-![i](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;i
-"i") is given by their body mass ratio:   
-![
-P(A\_{ij} = 1) = \\frac{p}{1 + p}
-](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%0AP%28A_%7Bij%7D%20%3D%201%29%20%3D%20%5Cfrac%7Bp%7D%7B1%20%2B%20p%7D%0A
-"
-P(A_{ij} = 1) = \\frac{p}{1 + p}
-")  
-where   
-![
-p = exp( a\_1 + a\_2 log\_{10}(\\frac{m\_j}{m\_i}) + a\_3
-(log\_{10}(\\frac{m\_j}{m\_i}))^2 )
-](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%0Ap%20%3D%20exp%28%20a_1%20%2B%20a_2%20log_%7B10%7D%28%5Cfrac%7Bm_j%7D%7Bm_i%7D%29%20%2B%20a_3%20%28log_%7B10%7D%28%5Cfrac%7Bm_j%7D%7Bm_i%7D%29%29%5E2%20%29%0A
-"
-p = exp( a_1 + a_2 log_{10}(\\frac{m_j}{m_i}) + a_3 (log_{10}(\\frac{m_j}{m_i}))^2 )
-")  
-and
-![m\_i](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;m_i
-"m_i") and
-![m\_j](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;m_j
-"m_j") are the body masses if prey and predator, respectively.
+predator $j$ predates on prey $i$ is given by their body mass ratio: $$
+P(A_{ij} = 1) = \frac{p}{1 + p}
+$$ where $$
+p = exp( a_1 + a_2 log_{10}(\frac{m_j}{m_i}) + a_3 (log_{10}(\frac{m_j}{m_i}))^2 )
+$$ and $m_i$ and $m_j$ are the body masses if prey and predator,
+respectively.
 
 This model is coded in stan and is called using `yeakel_stan()`:
 
@@ -129,44 +122,17 @@ par(oldpar)
 This model is a conceptual variation of the Yeakel (2014) model. In
 Yeakel’s model, the relative optimal prey size is constant for all
 predators, with niche width determined by the parameter `a3`. In Li’s
-model, instead, the optimal prey size
-(![\\mu\_j](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Cmu_j
-"\\mu_j")) and niche width
-![\\sigma\_j](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Csigma_j
-"\\sigma_j") of a predator
-![j](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;j
-"j") scale allometrically with predators’ size. Specifically, for a
-predator
-![j](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;j
-"j"), its optimal size prey is:   
-![
-\\mu\_j = \\alpha\_0 + \\alpha\_1 log\_{10}(m\_j)
-](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%0A%5Cmu_j%20%3D%20%5Calpha_0%20%2B%20%5Calpha_1%20log_%7B10%7D%28m_j%29%0A
-"
-\\mu_j = \\alpha_0 + \\alpha_1 log_{10}(m_j)
-")  
-its niche width is:   
-![
-\\sigma\_j = exp(\\beta\_0 + \\beta\_1 log\_{10}(m\_j))
-](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%0A%5Csigma_j%20%3D%20exp%28%5Cbeta_0%20%2B%20%5Cbeta_1%20log_%7B10%7D%28m_j%29%29%0A
-"
-\\sigma_j = exp(\\beta_0 + \\beta_1 log_{10}(m_j))
-")  
-and the maximum probability of interaction is:   
-![
-\\theta\_j = logit^{-1}(\\gamma\_0 + \\gamma\_1 log\_{10}(m\_j))
-](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%0A%5Ctheta_j%20%3D%20logit%5E%7B-1%7D%28%5Cgamma_0%20%2B%20%5Cgamma_1%20log_%7B10%7D%28m_j%29%29%0A
-"
-\\theta_j = logit^{-1}(\\gamma_0 + \\gamma_1 log_{10}(m_j))
-")  
-The probability of interaction is then calculated as:   
-![
-P(A\_{ij} = 1) = \\theta\_j exp( - \\frac{(log\_{10}(m\_j/m\_i) -
-\\mu\_j)^2}{2\\sigma\_j^2} )
-](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%0AP%28A_%7Bij%7D%20%3D%201%29%20%3D%20%5Ctheta_j%20exp%28%20-%20%5Cfrac%7B%28log_%7B10%7D%28m_j%2Fm_i%29%20-%20%5Cmu_j%29%5E2%7D%7B2%5Csigma_j%5E2%7D%20%29%0A
-"
-P(A_{ij} = 1) = \\theta_j exp( - \\frac{(log_{10}(m_j/m_i) - \\mu_j)^2}{2\\sigma_j^2} )
-")  
+model, instead, the optimal prey size ($\mu_j$) and niche width
+$\sigma_j$ of a predator $j$ scale allometrically with predators’ size.
+Specifically, for a predator $j$, its optimal size prey is: $$
+\mu_j = \alpha_0 + \alpha_1 log_{10}(m_j)
+$$ its niche width is: $$
+\sigma_j = exp(\beta_0 + \beta_1 log_{10}(m_j))
+$$ and the maximum probability of interaction is: $$
+\theta_j = logit^{-1}(\gamma_0 + \gamma_1 log_{10}(m_j))
+$$ The probability of interaction is then calculated as: $$
+P(A_{ij} = 1) = \theta_j exp( - \frac{(log_{10}(m_j/m_i) - \mu_j)^2}{2\sigma_j^2} )
+$$
 
 ``` r
 # create community
@@ -178,7 +144,7 @@ fw <- matrix(NA, nrow = S, ncol = S)
 alpha0 <- -3
 alpha1 <- 2
 beta0 <- -3
-beta1 <- 0.5
+beta1 <- 0.75
 gamma0 <- 0.1
 gamma1 <- -0.1
 
@@ -206,11 +172,11 @@ fit_li <- li_stan(
   warmup = 250, iter = 500, #to speed up vignette
   cores = 4, refresh = 250
 )
-#> Warning: There were 140 divergent transitions after warmup. See
+#> Warning: There were 342 divergent transitions after warmup. See
 #> https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
 #> to find out why this is a problem and how to eliminate them.
 #> Warning: Examine the pairs() plot to diagnose sampling problems
-#> Warning: The largest R-hat is 1.05, indicating chains have not mixed.
+#> Warning: The largest R-hat is 1.56, indicating chains have not mixed.
 #> Running the chains for more iterations may help. See
 #> https://mc-stan.org/misc/warnings.html#r-hat
 #> Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
@@ -245,9 +211,9 @@ par(oldpar)
 # References
 
 Antunes, A. C., Berti, E., Brose, U., Hirt, M. R., Karger, D. N.,
-O’Connor, L. M., … & Gauzens, B. (2024). Linking biodiversity,
-ecosystem function, and Nature’s contributions to people: a
-macroecological energy flux perspective. Trends in Ecology & Evolution.
+O’Connor, L. M., … & Gauzens, B. (2024). Linking biodiversity, ecosystem
+function, and Nature’s contributions to people: a macroecological energy
+flux perspective. Trends in Ecology & Evolution.
 <https://doi.org/10.1016/j.tree.2024.01.004>
 
 Li, J., Luo, M., Wang, S., Gauzens, B., Hirt, M. R., Rosenbaum, B., &

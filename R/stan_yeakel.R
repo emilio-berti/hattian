@@ -1,4 +1,4 @@
-#' Yeakel et al. (?) model.
+#' @title Yeakel et al. (2014) model.
 #'
 #' @importFrom rstan sampling
 #' @export

@@ -4,15 +4,13 @@
 \alias{li_predict}
 \title{Predict Using Li Model}
 \usage{
-li_predict(fit, m_prey, m_pred, samples = 300)
+li_predict(fit, masses, m_pred, samples = 300)
 }
 \arguments{
 \item{fit}{Numeric matrix of the adjacency matrix of the food web.
 Predators are in columns and prey in rows.}
 
-\item{m_prey}{Numeric vector of the prey body mass.}
-
-\item{m_pred}{Numeric vector of the predator body mass.}
+\item{masses}{Numeric vector of the species' body mass.}
 
 \item{samples}{Numeric value of the number of samples to draw.}
 }

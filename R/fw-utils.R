@@ -17,15 +17,21 @@ load_tetraeu <- function() {
 #' Show Web
 #'
 #' @importFrom graphics image
+#' @importFrom grDevices hcl.colors
 #' @export
 #' @param fw Numeric matrix of the adjacency matrix of the food web.
 #'  Predators are in columns and prey in rows.
 #' @return NULL
 show_web <- function(fw) {
 	fw <- t(apply(fw, 2, rev)) #predators on columns
+	if (is.integer(fw)) {
+		pal <- c("grey20", "dodgerblue2")
+	} else {
+		pal <- hcl.colors(100, "Zissou 1")
+	}
 	image(
 		fw,
-		col = c("grey20", "dodgerblue2"),
+		col = pal,
 		axes = FALSE, frame = TRUE
 	)
 	grid(

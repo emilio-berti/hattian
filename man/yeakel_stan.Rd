@@ -2,7 +2,7 @@
 % Please edit documentation in R/stan_yeakel.R
 \name{yeakel_stan}
 \alias{yeakel_stan}
-\title{Yeakel et al. (?) model.}
+\title{Yeakel et al. (2014) model.}
 \usage{
 yeakel_stan(fw, masses, ...)
 }
@@ -18,7 +18,7 @@ Predators are in columns and prey in rows.}
 An object of class \code{stanfit} returned by \code{rstan::sampling}
 }
 \description{
-Yeakel et al. (?) model.
+Yeakel et al. (2014) model.
 }
 \examples{
 \dontrun{

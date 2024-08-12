@@ -13,6 +13,7 @@ Biarch: true
 Depends: 
     R (>= 3.4.0)
 Imports: 
+    randomForest,
     loo,
     methods,
     Rcpp (>= 0.12.0),

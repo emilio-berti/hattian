@@ -1,4 +1,4 @@
-#' Li et al. (2024) model.
+#' @title Li et al. (2024) model.
 #'
 #' @importFrom rstan extract
 #' @importFrom stats sd
@@ -52,8 +52,7 @@ li_stan <- function(fw, masses, ...) {
 #' @export
 #' @param fit Numeric matrix of the adjacency matrix of the food web.
 #'  Predators are in columns and prey in rows.
-#' @param m_prey Numeric vector of the prey body mass.
-#' @param m_pred Numeric vector of the predator body mass.
+#' @param masses Numeric vector of the species' body mass.
 #' @param samples Numeric value of the number of samples to draw.
 #' @return An object of class `stanfit` returned by `rstan::sampling`
 #'
@@ -74,19 +73,13 @@ li_stan <- function(fw, masses, ...) {
 #' fit <- li_stan(fw, m_prey, m_pred, warmup = 100, iter = 200, refresh = 10, cores = 4)
 #' preds <- li_predict(fit, m_prey, m_pred)
 #' }
-li_predict <- function(
-  fit,
-  m_prey,
-  m_pred,
-  samples = 300
-) {
+li_predict <- function(fit, masses, m_pred, samples = 300) {
   stopifnot(is(fit), "stanfit")
-  stopifnot(is(m_prey, "numeric"))
-  stopifnot(is(m_pred, "numeric"))
+  stopifnot(is(masses, "numeric"))
   stopifnot(is(samples), "numeric")
   # logit <- function(x) 1 / (1 + exp(-x))
-  m_prey <- matrix(m_prey, nrow = length(m_prey), ncol = length(m_pred))
-  m_pred <- matrix(m_prey, nrow = length(m_prey), ncol = length(m_pred), byrow = TRUE)
+  m_prey <- matrix(log10(masses), nrow = length(masses), ncol = length(masses))
+  m_pred <- matrix(log10(masses), nrow = length(masses), ncol = length(masses), byrow = TRUE)
   posterior <- rstan::extract(fit, c(
     "alpha0", "alpha1",
     "beta0", "beta1",
