@@ -33,9 +33,11 @@ li_stan <- function(fw, m_prey, m_pred, ...) {
   m_prey <- matrix(m_prey, nrow = nrow(fw), ncol = ncol(fw))
   m_pred <- matrix(m_prey, nrow = nrow(fw), ncol = ncol(fw), byrow = TRUE)
   basals <- which(colSums(fw) == 0)
-  fw <- fw[, -basals]
-  m_prey <- m_prey[, -basals]
-  m_pred <- m_pred[, -basals]
+  if (length(basals) > 0) {
+    m_prey <- m_prey[, -basals]
+    m_pred <- m_pred[, -basals]
+    fw <- fw[, -basals]
+  }
   standata <- list(
     N = length(fw),
     link = as.vector(fw),
