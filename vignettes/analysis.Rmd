@@ -17,3 +17,44 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(hattian)
 ```
+
+All data for the analyses is present in the hattian package.
+
+```{r datasets}
+data(package = "hattian")
+```
+
+## Taxonomic harmonization
+
+```{r backbone}
+amphibians <- amphibians[, c("species", "mass")]  # remove imputed column
+amphibians[, "class"] <- "Amphibia"
+birds[, "class"] <- "Aves"
+mammals[, "class"] <- "Mammalia"
+reptiles <- reptiles[, c("species", "mass")]  # remove imputed column
+reptiles[, "class"] <- "Reptilia"
+
+traits_harmonized <- harmonize(
+  backbone, 
+  list(
+    amphibians,
+    birds,
+    mammals,
+    reptiles
+  )
+)
+traits <- do.call(rbind, traits_harmonized)
+
+tetraeu <- load_tetraeu()
+web_harmonized <- harmonize(
+  backbone, 
+  list(data.frame(species = rownames(tetraeu)))
+)[[1]][["species"]]
+dimnames(tetraeu) <- list(web_harmonized, web_harmonized)
+missing_species <- which(is.na(colnames(tetraeu)))
+tetraeu <- tetraeu[-missing_species, -missing_species]
+
+missing_species <- rownames(tetraeu)[!rownames(tetraeu) %in% traits$species]
+
+
+```

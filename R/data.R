@@ -47,7 +47,7 @@
 #' For details, see <https://doi.org/10.1038/sdata.2017.123>.
 #'
 #' @format ## `amphibians`
-#' A data frame with 5,227 rows and 2 columns:
+#' A data frame with 5,227 rows and 3 columns:
 #' \describe{
 #'   \item{species}{Species name}
 #'   \item{mass}{Body mass (g)}
@@ -56,15 +56,31 @@
 #' @source <https://doi.org/10.5061/dryad.jm63xsj7b>
 "amphibians"
 
+#' Body Mass for Reptiles
+#' 
+#' A subset of data from ReptTraits, oncluding only species with known body mass
+#' or known body length, from whcih body masses was imputed.
+#' For details, see <https://doi.org/10.1038/s41597-024-03079-5>.
+#' @format ## `reptiles`
+#' A data frame with 12,059 rows and 3 columns:
+#' \describe{
+#'   \item{species}{Species name}
+#'   \item{mass}{Body mass (g)}
+#'   \item{imputed}{Was body mass imputed using major axis regression?}
+#' }
+#' @source <https://doi.org/10.1038/s41597-024-03079-5>
+"reptiles"
+
 #' GBIF Taxonomic Backbone
 #'
 #' The GBIF taxonomic backbone for the species in the datasets obtained 
 #' running the function `gbif_taxonomy`.
 #'
 #' @format ## `backbone`
-#' A data frame with 13,158 rows and 2 columns:
+#' A data frame with 30,610 rows and 3 columns:
 #' \describe{
-#'   \item{species}{Species name}
+#'   \item{original}{Species name in the original dataset}
+#'   \item{gbif}{Species name in GBIF backbone}
 #'   \item{status}{Status of the nomenclature}
 #' }
 "backbone"

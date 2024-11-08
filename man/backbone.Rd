@@ -7,9 +7,10 @@
 \format{
 \subsection{\code{backbone}}{
 
-A data frame with 13,158 rows and 2 columns:
+A data frame with 30,610 rows and 3 columns:
 \describe{
-\item{species}{Species name}
+\item{original}{Species name in the original dataset}
+\item{gbif}{Species name in GBIF backbone}
 \item{status}{Status of the nomenclature}
 }
 }

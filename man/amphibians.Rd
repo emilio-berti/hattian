@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{amphibians}}{
 
-A data frame with 5,227 rows and 2 columns:
+A data frame with 5,227 rows and 3 columns:
 \describe{
 \item{species}{Species name}
 \item{mass}{Body mass (g)}

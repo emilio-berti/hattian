@@ -1,24 +1,43 @@
 #' Get GBIF Taxonomy
 #'
 #' @importFrom rgbif name_backbone_checklist
+#' @importFrom methods is
 #'
 #' @export
 #' @param sp Character vector of species names.
 #' @return A data.frame object returned by `rbif::name_backbone_checklist`.
 #' 
 #' @details This function takes some time and it's needed only once. I ran
-#'  it and saved the output as backbone.rda in the data folder. You can
-#'  access it 
+#' it and saved the output as backbone.rda in the data folder. You can
+#' access it 
 #'
+#' @example
+#' \dontrun{
+#' sp <- c(
+#'  amphibians$species,
+#'  birds$species,
+#'  mammals$species,
+#'  reptiles$species,
+#'  tetraeu$prey,
+#'  tetraeu$predator
+#' )
+#' sp <- sort(unique(sp))
+#' backbone <- gbif_taxonomy(sp)
+#' table(backbone$original != backbone$gbif)
+#' usethis::use_data(backbone, overwrite = TRUE)
+#' }
 gbif_taxonomy <- function(sp) {
-	taxonomy <- name_backbone_checklist(sp)[c("canonicalName", "status")]
+	stopifnot(is(sp, "character"))
+	taxonomy <- name_backbone_checklist(sp)[c("canonicalName", "status", "class")]
 	taxonomy[["gbif"]] <- taxonomy[["canonicalName"]]
 	taxonomy[["original"]] <- sp
-	taxonomy <- taxonomy[, c("original", "gbif", "status")]
+	taxonomy <- taxonomy[, c("original", "gbif", "class", "status")]
 	return (taxonomy)
 }
 
 #' Harmonize Taxonomy
+#'
+#' @importFrom methods is
 #'
 #' @export
 #' @param backbone Character vector of taxonomic backbone.
@@ -36,6 +55,7 @@ harmonize <- function(
 		harm <- sapply(datasets[[i]][["species"]], \(x) {
 			backbone[backbone[["original"]] == x, "gbif"]
 		})
+		harm <- as.vector(unlist(harm))
 		datasets[[i]][["species"]] <- harm
 		if (any(is.na(datasets[[i]][["species"]]))) {
 			message(
